@@ -5,7 +5,7 @@
 WARMUP=1000000
 SIM=10000000
 TRACES=(traces/*.champsimtrace.xz)
-BINARIES=(bin/champsim bin/champsim_bop)
+BINARIES=(bin/champsim bin/champsim_bop bin/champsim_ipcp bin/champsim_berti)
 RESULTS_DIR=results
 mkdir -p "$RESULTS_DIR"
 
