@@ -31,4 +31,5 @@ compile_commands.json
 .vscode/
 **/.DS_Store
 openevolve/.env
-openevolve_output/
+openevolve_output/checkpoints/*
+openevolve_output/logs/*
