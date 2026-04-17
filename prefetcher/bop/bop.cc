@@ -5,21 +5,45 @@
 
 #include "cache.h"
 
-// EVOLVE-BLOCK-START
+ // EVOLVE-BLOCK-START
 namespace {
-constexpr int SCORE_MAX = 31;
-constexpr int ROUND_MAX = 100;
-constexpr int BAD_SCORE = 1;
-constexpr int PREFETCH_DEGREE = 1;
-constexpr double MSHR_THRESHOLD = 0.7;
+  // Aim: improve IPC while reducing pollution.
+  // - Slightly larger SCORE_MAX to allow a truly good offset to accumulate evidence.
+  // - Longer ROUND_MAX to give more time for candidates to show recurring behavior.
+  // - Increase BAD_SCORE to avoid switching on weak signals.
+  // - PREFETCH_DEGREE reduced to 1 to lower useless prefetches and cache pollution.
+  // - Keep MSHR threshold moderate to avoid overloading memory system.
+  constexpr int SCORE_MAX = 10;
+  constexpr int ROUND_MAX = 48;
+  constexpr int BAD_SCORE = 3;
+  constexpr int PREFETCH_DEGREE = 1;
+  constexpr double MSHR_THRESHOLD = 0.60;
 
-constexpr std::array<int, 26> OFFSET_LIST = {
-    1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50, 54, 60};
+  // Compact, prioritized offsets: emphasize the smallest strides and common power-of-two jumps.
+  // Smaller candidate set converges faster and generates fewer exploratory prefetches.
+  constexpr std::array<int, 7> OFFSET_LIST = {
+      1, 2, 3, 4, 8, 16, 32};
 
-int score_update(int old_score)
-{
-  return old_score + 1;
-}
+  // Conservative-then-accelerate score growth:
+  // - First confirmation provides a minimal boost to avoid elevating spurious single hits.
+  // - While an offset has only a few confirmations, grow slowly (require repeated evidence).
+  // - Once an offset shows sustained confirmations, accelerate growth modestly to converge.
+  // - Always saturate at SCORE_MAX.
+  int score_update(int old_score)
+  {
+    if (old_score == 0) {
+      return 1;                       // minimal initial promotion
+    } else if (old_score < 3) {
+      // slow, steady growth for early confirmations
+      int ns = old_score + 1;
+      return (ns > SCORE_MAX) ? SCORE_MAX : ns;
+    } else {
+      // accelerate for sustained confirmations but keep modest increment to avoid runaway
+      int increment = 1 + (old_score >> 2); // 1 + floor(old_score/4)
+      int ns = old_score + increment;
+      return (ns > SCORE_MAX) ? SCORE_MAX : ns;
+    }
+  }
 } // namespace
 // EVOLVE-BLOCK-END
 
