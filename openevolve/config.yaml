@@ -1,0 +1,45 @@
+# OpenEvolve configuration for evolving the BOP prefetcher via CMU's LiteLLM gateway.
+#
+# API key is read from OPENAI_API_KEY env var (see .env.example).
+#
+# Usage:
+#   export OPENAI_API_KEY=sk-...
+#   openevolve-run openevolve/initial_program.cc openevolve/evaluator.py \
+#                  --config openevolve/config.yaml --iterations 10
+
+max_iterations: 20
+checkpoint_interval: 5
+language: cpp
+
+llm:
+  primary_model: "gpt-5-mini"
+  primary_model_weight: 1.0
+  api_base: "https://ai-gateway.andrew.cmu.edu"
+  temperature: 0.7
+  max_tokens: 8000
+  timeout: 120
+
+prompt:
+  system_message: |
+    You are an expert computer architect specializing in memory prefetcher design.
+    You are evolving a Best Offset Prefetcher (BOP) for the L2 cache in ChampSim.
+    Only modify the code inside the EVOLVE-BLOCK markers. You may change:
+      - Constant values (SCORE_MAX, ROUND_MAX, BAD_SCORE, PREFETCH_DEGREE, MSHR_THRESHOLD)
+      - The OFFSET_LIST array (candidate offsets to evaluate)
+      - The score_update() function logic
+    Keep the same variable names and types so the rest of the code still compiles.
+    Goal: maximize IPC while keeping prefetch accuracy high (avoid cache pollution).
+
+database:
+  population_size: 30
+  archive_size: 10
+  num_islands: 2
+  elite_selection_ratio: 0.2
+  exploitation_ratio: 0.7
+
+evaluator:
+  timeout: 360
+  parallel_evaluations: 1    # champsim runs are CPU-bound; keep serial for now
+
+diff_based_evolution: true
+max_code_length: 8000
