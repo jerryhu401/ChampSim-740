@@ -1,0 +1,64 @@
+# OpenEvolve configuration for evolving the Berti prefetcher via CMU's LiteLLM gateway.
+#
+# API key is read from OPENAI_API_KEY env var (see .env.example).
+#
+# Usage:
+#   export OPENAI_API_KEY=sk-...
+#   openevolve-run openevolve/initial_berti.cc openevolve/evaluator_berti.py \
+#                  --config openevolve/config_berti.yaml --iterations 20
+
+max_iterations: 20
+checkpoint_interval: 5
+language: cpp
+
+llm:
+  primary_model: "gpt-5-mini"
+  primary_model_weight: 1.0
+  api_base: "https://ai-gateway.andrew.cmu.edu"
+  temperature: 0.7
+  max_tokens: 8000
+  timeout: 120
+
+prompt:
+  system_message: |
+    You are an expert computer architect specializing in memory prefetcher design.
+    You are evolving the Berti prefetcher for the L2 cache in ChampSim.
+    Berti is a timing-aware delta prefetcher: it tracks per-PC access history,
+    measures how timely each observed delta was relative to average miss latency,
+    and uses a composite score to select the best delta to prefetch.
+    Only modify the code inside the EVOLVE-BLOCK markers. You may change:
+      - TIMELY_THRESHOLD / LATE_THRESHOLD: ratios of (observed latency / avg miss
+        latency) that classify a prefetch as timely vs late. A lower TIMELY_THRESHOLD
+        means only very early prefetches are considered timely.
+      - COVERAGE_WEIGHT, TIMELINESS_WEIGHT, ACCURACY_WEIGHT: coefficients in the
+        composite_score() function that trade off coverage (log of total observations)
+        against timeliness and accuracy.
+      - PREFETCH_DEGREE: how many consecutive delta steps to prefetch per access.
+      - HISTORY_DEPTH: how many past (block, timestamp) entries are kept per PC
+        (capped at 16 by the history array size in the header).
+      - MIN_CONFIDENCE: minimum number of times a delta must be observed before it
+        is eligible for selection by best_delta().
+      - MAX_DELTA: maximum absolute cache-line delta to track and prefetch.
+      - MSHR_THRESHOLD: fraction of MSHR entries free required for fill-level
+        prefetches; reduces bandwidth pressure when memory is congested.
+      - The composite_score() function itself: given (timely, late, total) counts
+        for a delta, return a score. Higher score → preferred delta. You may change
+        the formula, add penalties, use different log bases, etc.
+    Keep all existing variable names and types so the rest of the code compiles.
+    Goal: maximize IPC while keeping prefetch accuracy high (avoid cache pollution).
+    Note: Berti already achieves ~2x speedup over no-prefetcher on the gcc trace;
+    focus on squeezing meaningful gains beyond that high baseline.
+
+database:
+  population_size: 30
+  archive_size: 10
+  num_islands: 2
+  elite_selection_ratio: 0.2
+  exploitation_ratio: 0.7
+
+evaluator:
+  timeout: 360
+  parallel_evaluations: 1
+
+diff_based_evolution: true
+max_code_length: 8000

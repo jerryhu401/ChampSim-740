@@ -14,8 +14,8 @@ override BTB_ROOT += $(addsuffix /btb,$(MODULE_ROOT))
 override PREFETCH_ROOT += $(addsuffix /prefetcher,$(MODULE_ROOT))
 override REPLACEMENT_ROOT += $(addsuffix /replacement,$(MODULE_ROOT))
 
-# vcpkg integration
-TRIPLET_DIR = $(patsubst %/,%,$(firstword $(filter-out $(ROOT_DIR)/vcpkg_installed/vcpkg/, $(wildcard $(ROOT_DIR)/vcpkg_installed/*/))))
+# vcpkg integration (use MinGW static triplet for GCC compatibility)
+TRIPLET_DIR = $(ROOT_DIR)/vcpkg_installed/x64-mingw-static
 override CPPFLAGS += -I$(OBJ_ROOT)
 override LDFLAGS  += -L$(TRIPLET_DIR)/lib -L$(TRIPLET_DIR)/lib/manual-link
 override LDLIBS   += -lCLI11 -llzma -lz -lbz2 -lfmt
@@ -29,7 +29,7 @@ prereq_for_generated:=
 
 # List all subdirectories of a given directory
 # $1 - parent directory
-ls_dirs = $(patsubst %/,%,$(filter %/,$(wildcard $1/*/)))
+ls_dirs = $(patsubst %/,%,$(subst \,/,$(filter %/,$(wildcard $1/*))))
 
 # Expands to the given legacy file if the module folder contains a file named "__legacy__"
 # $1 - path to search
@@ -115,7 +115,7 @@ configclean: clean compile_commands_clean
 reverse = $(if $(wordlist 2,2,$(1)),$(call reverse,$(call tail,$1)) $(firstword $(1)),$(1))
 
 absolute.options:
-	@echo "-I$(realpath inc) -isystem $(realpath $(TRIPLET_DIR)/include)" > $@
+	@echo "-I$$(cygpath -m $(realpath inc)) -isystem $$(cygpath -m $(realpath $(TRIPLET_DIR)/include))" > $@
 
 attach_options = $(call reverse, $(addprefix @,$(filter %.options, $^)))
 
