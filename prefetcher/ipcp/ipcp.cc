@@ -6,7 +6,28 @@
 
 #include "cache.h"
 
-// === BEGIN EVOLVABLE FUNCTION ===
+// EVOLVE-BLOCK-START
+namespace {
+  // Prefetch degree per IP class
+  constexpr int CS_DEGREE   = 3;
+  constexpr int CPLX_DEGREE = 2;
+  constexpr int GS_DEGREE   = 4;
+  constexpr int NL_DEGREE   = 1;
+
+  // Classification confidence thresholds
+  constexpr int CS_CONFIDENCE_THRESHOLD   = 3;
+  constexpr int CPLX_CONFIDENCE_THRESHOLD = 3;
+
+  // Global stream: how many more pos/neg accesses needed to declare a stream
+  constexpr int STREAM_DETECT_THRESHOLD = 4;
+
+  // Saturating confidence counter max
+  constexpr int CONFIDENCE_SAT_MAX = 7;
+
+  // Throttle fill-level prefetches when MSHR is this full
+  constexpr double MSHR_THRESHOLD = 0.5;
+} // namespace
+
 ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int confidence, ip_class_t old_class)
 {
   if (new_stride == 0)
@@ -21,7 +42,7 @@ ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int c
     return CPLX;
   return NL;
 }
-// === END EVOLVABLE FUNCTION ===
+// EVOLVE-BLOCK-END
 
 void ipcp::prefetcher_initialize()
 {

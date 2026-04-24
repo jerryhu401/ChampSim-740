@@ -17,6 +17,8 @@
 #ifndef BANDWIDTH_H
 #define BANDWIDTH_H
 
+#include <cstddef>
+
 namespace champsim
 {
 /**
@@ -26,7 +28,7 @@ namespace champsim
  */
 class bandwidth
 {
-  using underlying_type = long int;
+  using underlying_type = std::ptrdiff_t;
   enum class max_t : underlying_type {};
 
 public:

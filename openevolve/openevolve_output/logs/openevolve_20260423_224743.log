@@ -1,0 +1,37 @@
+2026-04-23 22:47:43,159 - openevolve.controller - INFO - Logging to openevolve\openevolve_output\logs\openevolve_20260423_224743.log
+2026-04-23 22:47:43,183 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-04-23 22:47:43,739 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: gpt-5-mini
+2026-04-23 22:47:43,739 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: gpt-5-mini (weight: 1.00)
+2026-04-23 22:47:44,259 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-04-23 22:47:44,259 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-04-23 22:47:44,259 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-04-23 22:47:44,259 - openevolve.evaluator - INFO - Successfully loaded evaluation function from openevolve/evaluator_berti.py
+2026-04-23 22:47:44,271 - openevolve.evaluator - WARNING - Configuration has 'cascade_evaluation: true' but evaluator 'openevolve/evaluator_berti.py' does not define 'evaluate_stage1' function. This will fall back to direct evaluation, making the cascade setting useless. Consider setting 'cascade_evaluation: false' or implementing cascade functions.
+2026-04-23 22:47:44,271 - openevolve.evaluator - INFO - Initialized evaluator with openevolve/evaluator_berti.py
+2026-04-23 22:47:44,271 - openevolve.controller - INFO - Initialized OpenEvolve with openevolve/initial_berti.cc
+2026-04-23 22:47:44,272 - openevolve.controller - INFO - Adding initial program to database
+2026-04-23 22:48:04,951 - openevolve.evaluator - INFO - Evaluated program b437432d-6a08-467e-843a-7976b50713b4 in 20.68s: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=run_failed: 
+2026-04-23 22:48:04,951 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-04-23 22:48:04,951 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-04-23 22:48:04,951 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-04-23 22:48:04,967 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-04-23 22:48:04,967 - openevolve.controller - INFO - Using island-based evolution with 2 islands
+2026-04-23 22:48:04,969 - openevolve.database - INFO - Island Status:
+2026-04-23 22:48:04,969 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0 (best: b437432d-6a08-467e-843a-7976b50713b4)
+2026-04-23 22:48:04,970 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-04-23 22:48:04,970 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 20 iterations (total: 21)
+2026-04-23 22:48:05,069 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-04-23 22:48:57,616 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-04-23 22:48:57,616 - openevolve.process_parallel - INFO - Iteration 1: Program e7c616c7-a841-4b5a-832f-3b99f062dc65 (parent: b437432d-6a08-467e-843a-7976b50713b4) completed in 50.33s
+2026-04-23 22:48:57,618 - openevolve.process_parallel - INFO - Metrics: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=run_failed: 
+2026-04-23 22:49:46,383 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 7, 'diversity': 0}
+2026-04-23 22:49:46,383 - openevolve.process_parallel - INFO - Iteration 2: Program 214138ca-c5b4-40f9-af0a-81ace4c0a4a2 (parent: b437432d-6a08-467e-843a-7976b50713b4) completed in 48.77s
+2026-04-23 22:49:46,384 - openevolve.process_parallel - INFO - Metrics: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=run_failed: 
+2026-04-23 22:50:06,063 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-04-23 22:50:06,063 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-04-23 22:50:06,066 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-04-23 22:50:06,085 - openevolve.controller - INFO - Evolution stopped due to shutdown request
+2026-04-23 22:51:32,785 - openevolve.process_parallel - INFO - Stopped process pool
+2026-04-23 22:51:32,785 - openevolve.controller - INFO - Using tracked best program: b437432d-6a08-467e-843a-7976b50713b4
+2026-04-23 22:51:32,785 - openevolve.controller - INFO - Evolution complete. Best program has metrics: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=run_failed: 
+2026-04-23 22:51:32,787 - openevolve.controller - INFO - Saved best program to openevolve\openevolve_output\best\best_program.cc with program info to openevolve\openevolve_output\best\best_program_info.json

@@ -1,0 +1,43 @@
+2026-04-23 22:37:59,124 - openevolve.controller - INFO - Logging to openevolve\openevolve_output\logs\openevolve_20260423_223759.log
+2026-04-23 22:37:59,140 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-04-23 22:37:59,717 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: gpt-5-mini
+2026-04-23 22:37:59,717 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: gpt-5-mini (weight: 1.00)
+2026-04-23 22:38:00,218 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-04-23 22:38:00,218 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-04-23 22:38:00,218 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-04-23 22:38:00,230 - openevolve.evaluator - INFO - Successfully loaded evaluation function from openevolve/evaluator_berti.py
+2026-04-23 22:38:00,231 - openevolve.evaluator - WARNING - Configuration has 'cascade_evaluation: true' but evaluator 'openevolve/evaluator_berti.py' does not define 'evaluate_stage1' function. This will fall back to direct evaluation, making the cascade setting useless. Consider setting 'cascade_evaluation: false' or implementing cascade functions.
+2026-04-23 22:38:00,231 - openevolve.evaluator - INFO - Initialized evaluator with openevolve/evaluator_berti.py
+2026-04-23 22:38:00,231 - openevolve.controller - INFO - Initialized OpenEvolve with openevolve/initial_berti.cc
+2026-04-23 22:38:00,231 - openevolve.controller - INFO - Adding initial program to database
+2026-04-23 22:38:25,051 - openevolve.evaluator - INFO - Evaluated program 031984aa-7efa-4849-9c79-2dfe45f971ec in 24.82s: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=build_failed: /gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: .csconfig/modules/replacement\srrip/srrip.o:srrip.cc:(.text+0x7f0): multiple definition of `srrip_set_helper::update(long, bool)'; .csconfig/modules/replacement/srrip/srrip.o:srrip.cc:(.text+0x7f0): first defined here
+collect2.exe: error: ld returned 1 exit status
+mingw32-make: *** [Makefile:299: bin\champsim_berti] Error 1
+
+2026-04-23 22:38:25,053 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-04-23 22:38:25,057 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-04-23 22:38:25,057 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-04-23 22:38:25,061 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-04-23 22:38:25,062 - openevolve.controller - INFO - Using island-based evolution with 2 islands
+2026-04-23 22:38:25,062 - openevolve.database - INFO - Island Status:
+2026-04-23 22:38:25,062 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0 (best: 031984aa-7efa-4849-9c79-2dfe45f971ec)
+2026-04-23 22:38:25,063 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-04-23 22:38:25,064 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 20 iterations (total: 21)
+2026-04-23 22:38:25,285 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-04-23 22:39:39,409 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-04-23 22:39:39,409 - openevolve.process_parallel - INFO - Iteration 1: Program b023573c-00cf-43b1-83a4-64460435331f (parent: 031984aa-7efa-4849-9c79-2dfe45f971ec) completed in 70.94s
+2026-04-23 22:39:39,409 - openevolve.process_parallel - INFO - Metrics: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=build_failed: /gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: .csconfig/modules/replacement\srrip/srrip.o:srrip.cc:(.text+0x7f0): multiple definition of `srrip_set_helper::update(long, bool)'; .csconfig/modules/replacement/srrip/srrip.o:srrip.cc:(.text+0x7f0): first defined here
+collect2.exe: error: ld returned 1 exit status
+mingw32-make: *** [Makefile:299: bin\champsim_berti] Error 1
+
+2026-04-23 22:39:43,298 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-04-23 22:39:43,314 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-04-23 22:39:43,314 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-04-23 22:39:43,336 - openevolve.controller - INFO - Evolution stopped due to shutdown request
+2026-04-23 22:41:04,596 - openevolve.process_parallel - INFO - Stopped process pool
+2026-04-23 22:41:04,596 - openevolve.controller - INFO - Using tracked best program: 031984aa-7efa-4849-9c79-2dfe45f971ec
+2026-04-23 22:41:04,596 - openevolve.controller - INFO - Evolution complete. Best program has metrics: combined_score=0.0000, ipc=0.0000, speedup=0.0000, error=build_failed: /gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: .csconfig/modules/replacement\srrip/srrip.o:srrip.cc:(.text+0x7f0): multiple definition of `srrip_set_helper::update(long, bool)'; .csconfig/modules/replacement/srrip/srrip.o:srrip.cc:(.text+0x7f0): first defined here
+collect2.exe: error: ld returned 1 exit status
+mingw32-make: *** [Makefile:299: bin\champsim_berti] Error 1
+
+2026-04-23 22:41:04,598 - openevolve.controller - INFO - Saved best program to openevolve\openevolve_output\best\best_program.cc with program info to openevolve\openevolve_output\best\best_program_info.json

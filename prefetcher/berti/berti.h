@@ -10,19 +10,6 @@
 #include "msl/lru_table.h"
 
 struct berti : public champsim::modules::prefetcher {
-  // === BEGIN EVOLVABLE PARAMETERS ===
-  static constexpr double TIMELY_THRESHOLD = 0.5;
-  static constexpr double LATE_THRESHOLD = 1.5;
-  static constexpr double COVERAGE_WEIGHT = 1.0;
-  static constexpr double TIMELINESS_WEIGHT = 1.0;
-  static constexpr double ACCURACY_WEIGHT = 0.5;
-  static constexpr int PREFETCH_DEGREE = 2;
-  static constexpr int HISTORY_DEPTH = 16;
-  static constexpr int MIN_CONFIDENCE = 3;
-  static constexpr int MAX_DELTA = 64;
-  static constexpr double MSHR_THRESHOLD = 0.5;
-  // === END EVOLVABLE PARAMETERS ===
-
   uint64_t current_cycle = 0;
 
   // Per-PC history: stores recent (block_addr, timestamp) pairs
@@ -65,9 +52,7 @@ struct berti : public champsim::modules::prefetcher {
   };
   std::array<pending_entry, PENDING_SIZE> pending{};
 
-  // === BEGIN EVOLVABLE FUNCTION ===
   static double composite_score(int timely, int late, int total);
-  // === END EVOLVABLE FUNCTION ===
 
   void add_history(pc_entry& entry, champsim::block_number block, uint64_t cycle);
   int best_delta(const pc_entry& entry);

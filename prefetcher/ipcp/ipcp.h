@@ -10,18 +10,6 @@
 #include "msl/lru_table.h"
 
 struct ipcp : public champsim::modules::prefetcher {
-  // === BEGIN EVOLVABLE PARAMETERS ===
-  static constexpr int CS_DEGREE = 3;
-  static constexpr int CPLX_DEGREE = 2;
-  static constexpr int GS_DEGREE = 4;
-  static constexpr int NL_DEGREE = 1;
-  static constexpr int CS_CONFIDENCE_THRESHOLD = 3;
-  static constexpr int CPLX_CONFIDENCE_THRESHOLD = 3;
-  static constexpr int STREAM_DETECT_THRESHOLD = 4;
-  static constexpr int CONFIDENCE_SAT_MAX = 7;
-  static constexpr double MSHR_THRESHOLD = 0.5;
-  // === END EVOLVABLE PARAMETERS ===
-
   enum ip_class_t : uint8_t { NONE = 0, CS = 1, CPLX = 2, GS = 3, NL = 4 };
 
   // IP tracker table
@@ -61,9 +49,7 @@ struct ipcp : public champsim::modules::prefetcher {
   champsim::msl::lru_table<ip_entry> ip_table{IP_TABLE_SETS, IP_TABLE_WAYS};
   champsim::msl::lru_table<cplx_entry> cplx_table{CPLX_TABLE_SETS, CPLX_TABLE_WAYS};
 
-  // === BEGIN EVOLVABLE FUNCTION ===
   static ip_class_t classify_ip(int64_t old_stride, int64_t new_stride, int confidence, ip_class_t old_class);
-  // === END EVOLVABLE FUNCTION ===
 
   void issue_prefetch(champsim::address addr, champsim::block_number block, int64_t delta, int degree, uint32_t metadata);
 

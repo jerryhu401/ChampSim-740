@@ -1,0 +1,95 @@
+2026-04-23 22:55:49,769 - openevolve.controller - INFO - Logging to openevolve\openevolve_output\logs\openevolve_20260423_225549.log
+2026-04-23 22:55:49,791 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-04-23 22:55:50,369 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: gpt-5-mini
+2026-04-23 22:55:50,369 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: gpt-5-mini (weight: 1.00)
+2026-04-23 22:55:50,866 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-04-23 22:55:50,882 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-04-23 22:55:50,882 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-04-23 22:55:50,882 - openevolve.evaluator - INFO - Successfully loaded evaluation function from openevolve/evaluator_berti.py
+2026-04-23 22:55:50,882 - openevolve.evaluator - WARNING - Configuration has 'cascade_evaluation: true' but evaluator 'openevolve/evaluator_berti.py' does not define 'evaluate_stage1' function. This will fall back to direct evaluation, making the cascade setting useless. Consider setting 'cascade_evaluation: false' or implementing cascade functions.
+2026-04-23 22:55:50,882 - openevolve.evaluator - INFO - Initialized evaluator with openevolve/evaluator_berti.py
+2026-04-23 22:55:50,882 - openevolve.controller - INFO - Initialized OpenEvolve with openevolve/initial_berti.cc
+2026-04-23 22:55:50,882 - openevolve.controller - INFO - Adding initial program to database
+2026-04-23 22:56:23,977 - openevolve.evaluator - INFO - Evaluated program 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1 in 33.09s: combined_score=1.9243, speedup=2.0306, ipc=0.9564, accuracy=0.9679, useful=13818.0000, useless=458.0000, issued=57163.0000
+2026-04-23 22:56:23,977 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-04-23 22:56:23,986 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-04-23 22:56:23,986 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-04-23 22:56:23,986 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-04-23 22:56:23,986 - openevolve.controller - INFO - Using island-based evolution with 2 islands
+2026-04-23 22:56:23,986 - openevolve.database - INFO - Island Status:
+2026-04-23 22:56:23,986 - openevolve.database - INFO -  * Island 0: 1 programs, best=1.9243, avg=1.9243, diversity=0.00, gen=0 (best: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1)
+2026-04-23 22:56:23,986 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-04-23 22:56:23,988 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 20 iterations (total: 21)
+2026-04-23 22:56:24,069 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-04-23 22:57:30,045 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-04-23 22:57:30,054 - openevolve.process_parallel - INFO - Iteration 1: Program 2f9b9830-6c5c-4d54-a36e-16c6cd6b4090 (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 63.57s
+2026-04-23 22:57:30,055 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1349, speedup=2.2654, ipc=1.0670, accuracy=0.9604, useful=15405.0000, useless=636.0000, issued=91075.0000
+2026-04-23 22:58:40,047 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 0}
+2026-04-23 22:58:40,048 - openevolve.process_parallel - INFO - Iteration 2: Program d6aa8c4c-3310-4967-9978-dce92164f12e (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 70.01s
+2026-04-23 22:58:40,048 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0199, speedup=2.1380, ipc=1.0070, accuracy=0.9574, useful=14490.0000, useless=644.0000, issued=81743.0000
+2026-04-23 22:59:57,749 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 3}
+2026-04-23 22:59:57,749 - openevolve.process_parallel - INFO - Iteration 3: Program ff93841b-4bae-4cb3-8b4f-e60923f0af09 (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 77.70s
+2026-04-23 22:59:57,749 - openevolve.process_parallel - INFO - Metrics: combined_score=1.1725, speedup=1.1953, ipc=0.5630, accuracy=0.9668, useful=4634.0000, useless=159.0000, issued=22037.0000
+2026-04-23 23:01:24,508 - openevolve.process_parallel - INFO - Iteration 4: Program 85faa362-7577-4e8d-9cc1-3376a59a1a6b (parent: d6aa8c4c-3310-4967-9978-dce92164f12e) completed in 86.76s
+2026-04-23 23:01:24,508 - openevolve.process_parallel - INFO - Metrics: combined_score=1.9425, speedup=2.0505, ipc=0.9658, accuracy=0.9702, useful=13956.0000, useless=429.0000, issued=57740.0000
+2026-04-23 23:02:36,841 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 7, 'diversity': 0}
+2026-04-23 23:02:36,841 - openevolve.process_parallel - INFO - Iteration 5: Program 2861ac77-7245-42de-9054-ed254614db96 (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 72.33s
+2026-04-23 23:02:36,841 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1349, speedup=2.2654, ipc=1.0670, accuracy=0.9604, useful=15405.0000, useless=636.0000, issued=91075.0000
+2026-04-23 23:02:36,841 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 5
+2026-04-23 23:02:36,843 - openevolve.database - INFO - Island Status:
+2026-04-23 23:02:36,843 - openevolve.database - INFO -  * Island 0: 4 programs, best=2.1349, avg=1.8416, diversity=263.47, gen=3 (best: 2f9b9830-6c5c-4d54-a36e-16c6cd6b4090)
+2026-04-23 23:02:36,845 - openevolve.database - INFO -    Island 1: 2 programs, best=2.0199, avg=1.9812, diversity=122.30, gen=2 (best: d6aa8c4c-3310-4967-9978-dce92164f12e)
+2026-04-23 23:02:36,861 - openevolve.database - INFO - Saved database with 6 programs to openevolve\openevolve_output\checkpoints\checkpoint_5
+2026-04-23 23:02:36,862 - openevolve.process_parallel - ERROR - Error processing result from iteration 5: 'charmap' codec can't encode character '\u2192' in position 371: character maps to <undefined>
+2026-04-23 23:04:01,306 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 8, 'diversity': 0}
+2026-04-23 23:04:01,306 - openevolve.process_parallel - INFO - Iteration 6: Program 967ba6fe-5458-4687-9f37-d95247e0f5cf (parent: 85faa362-7577-4e8d-9cc1-3376a59a1a6b) completed in 84.47s
+2026-04-23 23:04:01,308 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0200, speedup=2.1380, ipc=1.0070, accuracy=0.9578, useful=14507.0000, useless=639.0000, issued=81887.0000
+2026-04-23 23:05:17,946 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 1}
+2026-04-23 23:05:17,946 - openevolve.process_parallel - INFO - Iteration 7: Program 7a43ad46-a323-414e-a09d-6befc7b49252 (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 76.63s
+2026-04-23 23:05:17,946 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1405, speedup=2.2718, ipc=1.0700, accuracy=0.9591, useful=15382.0000, useless=656.0000, issued=90721.0000
+2026-04-23 23:06:35,515 - openevolve.process_parallel - INFO - Iteration 8: Program 1df977d6-edc5-441d-bba2-ae8a2b3fe1a0 (parent: d6aa8c4c-3310-4967-9978-dce92164f12e) completed in 77.57s
+2026-04-23 23:06:35,517 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0033, speedup=2.1183, ipc=0.9977, accuracy=0.9683, useful=14371.0000, useless=471.0000, issued=56189.0000
+2026-04-23 23:07:45,870 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 7, 'diversity': 0} (fitness: 2.135 -> 2.148)
+2026-04-23 23:07:45,870 - openevolve.process_parallel - INFO - Iteration 9: Program 349775d9-38f3-4335-809c-fce051db1438 (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 70.35s
+2026-04-23 23:07:45,870 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1482, speedup=2.2803, ipc=1.0740, accuracy=0.9597, useful=15373.0000, useless=645.0000, issued=90617.0000
+2026-04-23 23:08:55,109 - openevolve.database - INFO - Island 1 MAP-Elites cell improved: {'complexity': 9, 'diversity': 0} (fitness: 2.020 -> 2.020)
+2026-04-23 23:08:55,109 - openevolve.process_parallel - INFO - Iteration 10: Program 7e2a1b35-8c52-490a-a377-bf6282750ac9 (parent: 1df977d6-edc5-441d-bba2-ae8a2b3fe1a0) completed in 69.24s
+2026-04-23 23:08:55,109 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0200, speedup=2.1380, ipc=1.0070, accuracy=0.9578, useful=14507.0000, useless=639.0000, issued=81887.0000
+2026-04-23 23:08:55,109 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 10
+2026-04-23 23:08:55,109 - openevolve.database - INFO - Island Status:
+2026-04-23 23:08:55,109 - openevolve.database - INFO -  * Island 0: 5 programs, best=2.1482, avg=1.9041, diversity=214.03, gen=5 (best: 349775d9-38f3-4335-809c-fce051db1438)
+2026-04-23 23:08:55,109 - openevolve.database - INFO -    Island 1: 4 programs, best=2.0200, avg=1.9964, diversity=22.12, gen=5 (best: 967ba6fe-5458-4687-9f37-d95247e0f5cf)
+2026-04-23 23:08:55,138 - openevolve.database - INFO - Saved database with 11 programs to openevolve\openevolve_output\checkpoints\checkpoint_10
+2026-04-23 23:08:55,138 - openevolve.process_parallel - ERROR - Error processing result from iteration 10: 'charmap' codec can't encode character '\u2192' in position 383: character maps to <undefined>
+2026-04-23 23:10:19,270 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 5, 'diversity': 0} (fitness: 1.924 -> 2.126)
+2026-04-23 23:10:19,270 - openevolve.process_parallel - INFO - Iteration 11: Program ffbb85d3-0cf4-4ce6-a389-c0f598b4e6e0 (parent: 4b627d6f-3f4a-46d0-9587-b9e2ebbe46b1) completed in 84.16s
+2026-04-23 23:10:19,270 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1262, speedup=2.2548, ipc=1.0620, accuracy=0.9691, useful=15323.0000, useless=489.0000, issued=90104.0000
+2026-04-23 23:11:51,213 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 2}
+2026-04-23 23:11:51,213 - openevolve.process_parallel - INFO - Iteration 12: Program b88f55c0-ddc1-494c-a269-788944058392 (parent: 967ba6fe-5458-4687-9f37-d95247e0f5cf) completed in 91.94s
+2026-04-23 23:11:51,213 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0273, speedup=2.1423, ipc=1.0090, accuracy=0.9923, useful=15168.0000, useless=118.0000, issued=60207.0000
+2026-04-23 23:13:07,479 - openevolve.process_parallel - INFO - Iteration 13: Program 39e4bbe3-791a-4190-a433-72db1f79376a (parent: ff93841b-4bae-4cb3-8b4f-e60923f0af09) completed in 76.27s
+2026-04-23 23:13:07,479 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1405, speedup=2.2718, ipc=1.0700, accuracy=0.9591, useful=15382.0000, useless=656.0000, issued=90721.0000
+2026-04-23 23:14:30,498 - openevolve.database - INFO - Island 1 MAP-Elites cell improved: {'complexity': 9, 'diversity': 2} (fitness: 2.027 -> 2.027)
+2026-04-23 23:14:30,498 - openevolve.process_parallel - INFO - Iteration 14: Program 87ded20c-32a2-4454-ace7-e41075ec730e (parent: 7e2a1b35-8c52-490a-a377-bf6282750ac9) completed in 83.02s
+2026-04-23 23:14:30,498 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0273, speedup=2.1423, ipc=1.0090, accuracy=0.9924, useful=15168.0000, useless=116.0000, issued=60208.0000
+2026-04-23 23:15:43,923 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 2}
+2026-04-23 23:15:43,923 - openevolve.process_parallel - INFO - Iteration 15: Program e8131be0-577f-47ee-b1c8-0d87445729f5 (parent: 349775d9-38f3-4335-809c-fce051db1438) completed in 73.43s
+2026-04-23 23:15:43,923 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1966, speedup=2.3355, ipc=1.1000, accuracy=0.9474, useful=15369.0000, useless=854.0000, issued=119011.0000
+2026-04-23 23:15:43,934 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 15
+2026-04-23 23:15:43,936 - openevolve.database - INFO - Island Status:
+2026-04-23 23:15:43,936 - openevolve.database - INFO -  * Island 0: 7 programs, best=2.1966, avg=2.0085, diversity=120.98, gen=8 (best: e8131be0-577f-47ee-b1c8-0d87445729f5)
+2026-04-23 23:15:43,936 - openevolve.database - INFO -    Island 1: 5 programs, best=2.0273, avg=2.0026, diversity=48.27, gen=7 (best: 87ded20c-32a2-4454-ace7-e41075ec730e)
+2026-04-23 23:15:43,964 - openevolve.database - INFO - Saved database with 16 programs to openevolve\openevolve_output\checkpoints\checkpoint_15
+2026-04-23 23:15:43,964 - openevolve.process_parallel - ERROR - Error processing result from iteration 15: 'charmap' codec can't encode character '\u2192' in position 448: character maps to <undefined>
+2026-04-23 23:16:59,690 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 1}
+2026-04-23 23:16:59,690 - openevolve.process_parallel - INFO - Iteration 16: Program a6708b8c-dabf-49a9-9380-b2cc15e20071 (parent: 1df977d6-edc5-441d-bba2-ae8a2b3fe1a0) completed in 75.77s
+2026-04-23 23:16:59,690 - openevolve.process_parallel - INFO - Metrics: combined_score=2.0273, speedup=2.1423, ipc=1.0090, accuracy=0.9924, useful=15168.0000, useless=116.0000, issued=60208.0000
+2026-04-23 23:18:06,278 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 8, 'diversity': 0}
+2026-04-23 23:18:06,278 - openevolve.process_parallel - INFO - Iteration 17: Program ae4e2074-036f-47e6-b2c5-1f60d37a7f6d (parent: 2f9b9830-6c5c-4d54-a36e-16c6cd6b4090) completed in 66.59s
+2026-04-23 23:18:06,278 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1305, speedup=2.2590, ipc=1.0640, accuracy=0.9735, useful=15319.0000, useless=417.0000, issued=89901.0000
+2026-04-23 23:18:52,347 - openevolve.process_parallel - WARNING - Iteration 18 error: Generated code exceeds maximum length (8088 > 8000)
+2026-04-23 23:20:12,512 - openevolve.process_parallel - INFO - Iteration 19: Program b7b85d83-9a69-4b6e-8815-e40e47d3bce7 (parent: 39e4bbe3-791a-4190-a433-72db1f79376a) completed in 80.17s
+2026-04-23 23:20:12,512 - openevolve.process_parallel - INFO - Metrics: combined_score=2.1178, speedup=2.2442, ipc=1.0570, accuracy=0.9807, useful=15225.0000, useless=300.0000, issued=88960.0000
+2026-04-23 23:21:08,668 - openevolve.process_parallel - WARNING - Iteration 20 error: Generated code exceeds maximum length (8094 > 8000)
+2026-04-23 23:21:08,764 - openevolve.database - INFO - Saved database with 19 programs to openevolve\openevolve_output\checkpoints\checkpoint_20
+2026-04-23 23:21:08,991 - openevolve.process_parallel - INFO - Stopped process pool
