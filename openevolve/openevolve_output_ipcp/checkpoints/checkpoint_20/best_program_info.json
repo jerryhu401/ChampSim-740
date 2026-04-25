@@ -1,0 +1,18 @@
+{
+  "id": "82e06d7d-db19-467b-acf5-d8931815f5e3",
+  "generation": 1,
+  "iteration": 1,
+  "current_iteration": 20,
+  "metrics": {
+    "combined_score": 2.176345853852812,
+    "speedup": 2.309978768577495,
+    "ipc": 1.088,
+    "accuracy": 0.9736496213306628,
+    "useful": 15556,
+    "useless": 421,
+    "issued": 90465
+  },
+  "language": "cpp",
+  "timestamp": 1777085727.4845574,
+  "saved_at": 1777087503.3521013
+}
