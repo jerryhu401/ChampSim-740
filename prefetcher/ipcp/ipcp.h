@@ -49,7 +49,7 @@ struct ipcp : public champsim::modules::prefetcher {
   champsim::msl::lru_table<ip_entry> ip_table{IP_TABLE_SETS, IP_TABLE_WAYS};
   champsim::msl::lru_table<cplx_entry> cplx_table{CPLX_TABLE_SETS, CPLX_TABLE_WAYS};
 
-  static ip_class_t classify_ip(int64_t old_stride, int64_t new_stride, int confidence, ip_class_t old_class);
+  ip_class_t classify_ip(int64_t old_stride, int64_t new_stride, int confidence, ip_class_t old_class);
 
   void issue_prefetch(champsim::address addr, champsim::block_number block, int64_t delta, int degree, uint32_t metadata);
 
