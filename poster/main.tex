@@ -1,0 +1,251 @@
+% Gemini theme: https://github.com/anishathalye/gemini
+% Patched for pdflatex (no fontspec, no Raleway/Lato).
+\documentclass[final]{beamer}
+
+% ==== Paper size: 36 in wide; height tuned to fit boxed content ====
+% 36 in = 91.44 cm; 37 in = 93.98 cm
+\usepackage[size=custom,width=91.44,height=93.98,scale=1.15]{beamerposter}
+\usetheme{gemini}
+\usecolortheme{gemini}
+
+% ==== Layout ====
+\newlength{\sepwidth}
+\newlength{\colwidth}
+\setlength{\sepwidth}{0.03\paperwidth}
+\setlength{\colwidth}{0.46\paperwidth}
+\newcommand{\separatorcolumn}{\begin{column}{\sepwidth}\end{column}}
+
+% ==== Section titles: single thick colored rule above for clean separation ====
+\setbeamerfont{block title}{family=\sffamily,size=\Large,series=\bfseries}
+\newcommand{\blocktitlerule}{%
+  {\color{darkblue}\rule{\linewidth}{1.6pt}}\par%
+}
+\setbeamertemplate{block begin}{%
+  \vspace*{0.4ex}%
+  \blocktitlerule
+  \vspace*{0.6ex}%
+  {\usebeamerfont{block title}\color{darkblue}\insertblocktitle\par}%
+  \vspace*{0.6ex}%
+  \usebeamerfont{block body}%
+  \begin{beamercolorbox}[colsep*=0ex]{block body}%
+  \justifying%
+  \setlength{\parskip}{1ex}%
+  \vskip0.3ex%
+}
+\setbeamertemplate{block end}{\end{beamercolorbox}\vskip0pt\vspace*{1.4ex}}
+\setbeamertemplate{block alerted begin}{%
+  \vspace*{0.4ex}%
+  \blocktitlerule
+  \vspace*{0.6ex}%
+  {\usebeamerfont{block title}\color{darkblue}\insertblocktitle\par}%
+  \vspace*{0.6ex}%
+  \usebeamerfont{block body}%
+  \begin{beamercolorbox}[colsep*=0ex]{block body alerted}%
+  \justifying%
+  \begin{adjustwidth}{1ex}{1ex}%
+  \setlength{\parskip}{1ex}%
+  \vskip0.3ex%
+}
+\setbeamertemplate{block alerted end}{\end{adjustwidth}\vskip1ex\end{beamercolorbox}\vskip0pt\vspace*{1.6ex}}
+
+% ==== Packages ====
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric}
+\usepackage{graphicx}
+\usepackage{listings}
+
+\definecolor{cmured}{RGB}{196,18,48}
+\definecolor{accent}{RGB}{30,90,160}
+\definecolor{good}{RGB}{20,130,60}
+\definecolor{lightgray}{RGB}{240,240,240}
+
+\lstdefinestyle{cppstyle}{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{good},
+  language=C++,
+  showstringspaces=false,
+  breaklines=true,
+  frame=none,
+  backgroundcolor=\color{lightgray},
+  xleftmargin=8pt,
+  framexleftmargin=8pt,
+  aboveskip=1ex,
+  belowskip=1ex,
+}
+
+% ==== Title ====
+\title{Evolving Hardware Prefetchers with LLM-Driven Code Mutation}
+\author{Jerry Hu \quad Helen Wang \quad Hao Kang}
+\institute[CMU]{Carnegie Mellon University \quad \texttt{\{zhuoranh,jingzhi3,haok\}@andrew.cmu.edu}}
+
+\begin{document}
+\begin{frame}[t,fragile]
+\begin{columns}[t]
+\separatorcolumn
+
+% =========================================================
+% LEFT COLUMN
+% =========================================================
+\begin{column}{\colwidth}
+
+\begin{block}{Motivation}
+Hardware prefetchers predict future cache misses to hide DRAM latency. Modern designs (BOP, IPCP, Berti) expose dozens of \emph{numeric thresholds, scoring functions, and classification rules}; the design space is huge.
+
+\textbf{OpenEvolve} is an LLM-driven evolutionary optimizer. We mark a region of the prefetcher's C++ source with \texttt{EVOLVE-BLOCK} and let \texttt{gpt-5-mini} (CMU LiteLLM gateway) propose mutations. Each candidate is built, simulated in ChampSim, scored, and fed back to a multi-island genetic algorithm.
+\end{block}
+
+\begin{block}{Pipeline}
+\centering
+\begin{tikzpicture}[
+  node distance=2.4cm and 2.0cm,
+  box/.style={rectangle, draw=cmured, very thick, fill=lightgray, rounded corners=4pt,
+              minimum width=5.4cm, minimum height=1.8cm, align=center,
+              font=\normalsize\bfseries, inner sep=4pt},
+  arrow/.style={-{Stealth[length=7mm,width=5mm]}, line width=2pt, draw=gray!75}
+]
+\node[box] (seed)  {Seed program\\\footnotesize \texttt{EVOLVE-BLOCK}};
+\node[box, right=of seed] (llm)   {LLM mutation\\\footnotesize gpt-5-mini};
+\node[box, right=of llm]  (build) {Build\\\footnotesize \texttt{make} champsim};
+\node[box, below=of build] (sim)   {ChampSim sim\\\footnotesize 200K + 2M instr};
+\node[box, below=of llm]   (score) {Score parse\\\footnotesize IPC, useful, useless};
+\node[box, below=of seed]  (ga)    {Multi-island GA\\\footnotesize archive top 10};
+\draw[arrow] (seed)  -- (llm);
+\draw[arrow] (llm)   -- (build);
+\draw[arrow] (build) -- (sim);
+\draw[arrow] (sim)   -- (score);
+\draw[arrow] (score) -- (ga);
+\draw[arrow] (ga)    -- (seed);
+\end{tikzpicture}
+
+\medskip
+\textbf{Fitness:}
+\(\textsf{score} = 0.9 \cdot \tfrac{\text{IPC}}{0.471} + 0.1 \cdot \tfrac{\text{useful}}{\text{useful}+\text{useless}}\)
+--- a 9$\times$ asymmetric trade-off.\\[0.4ex]
+Accuracy losses are tolerated when they unlock larger speedups.
+\end{block}
+
+\begin{block}{The Three Evolved Prefetchers}
+All sit at the L2 cache (1024 sets $\times$ 8 ways, 10-cycle latency, 32-entry MSHR).
+
+\heading{BOP --- Best Offset Prefetcher}
+Tests candidate offsets $o$: if \mbox{$(\text{block} - o)$} was recently accessed, $o$ scores up. The winning offset triggers prefetches.
+Knobs: \texttt{SCORE\_MAX}, \texttt{ROUND\_MAX}, \texttt{PREFETCH\_DEGREE}, \texttt{MSHR\_THRESHOLD}, the 26-element \texttt{OFFSET\_LIST}, and \texttt{score\_update()}.
+
+\heading{IPCP --- IP Class Prefetcher}
+Classifies each load PC into \textsc{cs} (constant stride), \textsc{cplx} (signature-based complex), \textsc{gs} (global stream), or \textsc{nl} (next-line); each class has its own prefetch degree.
+
+\heading{Berti --- Timing-Aware Delta Prefetcher}
+Per load PC, keeps a history of recent block addresses with issue cycles. Ranks observed deltas by \emph{timeliness} (latency vs.\ avg.\ miss latency); the best delta and its multiples are prefetched.
+\end{block}
+
+\begin{block}{Simulated Machine \& Trace}
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Component} & \textbf{Configuration} \\
+\midrule
+Core      & 4\,GHz OoO, 352-entry ROB, bimodal BP \\
+L1I / L1D & 64$\times$8 (4c) / 64$\times$12 (5c) \\
+L2C       & 1024$\times$8, 10c, evolved prefetcher \\
+LLC       & 2048$\times$16, 20c, LRU \\
+DRAM      & DDR4-3200, 1ch, $t_{\text{CAS}}{=}t_{\text{RCD}}{=}t_{\text{RP}}{=}24$ \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{flushleft}
+\textbf{Trace:} \texttt{602.gcc\_s-734B} (SPEC CPU 2017), 200K warmup + 2M sim instr.\\[0.5ex]
+\textbf{Baseline IPC (no prefetcher):} 0.471
+\end{flushleft}
+\end{block}
+
+\begin{block}{Evolution Configuration}
+\centering
+\begin{tabular}{l l @{\hspace{2.5em}} l l}
+\toprule
+\texttt{max\_iterations}      & 20         & \texttt{population\_size}    & 30 / island \\
+\texttt{primary\_model}       & gpt-5-mini & \texttt{num\_islands}        & 2           \\
+\texttt{temperature}          & 0.7        & \texttt{archive\_size}       & 10          \\
+\texttt{max\_tokens}          & 8000       & \texttt{elite\_selection}    & 0.20        \\
+\texttt{checkpoint\_interval} & 5          & \texttt{exploitation\_ratio} & 0.70        \\
+\bottomrule
+\end{tabular}
+\end{block}
+
+\end{column}
+
+\separatorcolumn
+
+% =========================================================
+% RIGHT COLUMN
+% =========================================================
+\begin{column}{\colwidth}
+
+\begin{block}{What Did the LLM Actually Change?}
+
+\heading{BOP --- best at iteration 6}
+Doubled \texttt{PREFETCH\_DEGREE} (1$\to$2), tightened \texttt{MSHR\_THRESHOLD} (0.7$\to$0.6), shortened \texttt{ROUND\_MAX} (100$\to$64), and duplicated small offsets in \texttt{OFFSET\_LIST}.
+
+\heading{IPCP --- best at iteration 1}
+A \emph{structural} change: \texttt{classify\_ip()} was made \textbf{non-static} so it could read \texttt{global\_stream\_dir} and route direction-aligned PCs straight into the \textsc{gs} class.
+\begin{lstlisting}[style=cppstyle]
+if (global_stream_dir != 0) {
+  if ((global_stream_dir > 0 && new_stride > 0) ||
+      (global_stream_dir < 0 && new_stride < 0)) {
+    if (confidence < CS_CONFIDENCE_THRESHOLD ||
+        old_class == GS) return GS;
+  }
+}
+\end{lstlisting}
+
+\heading{Berti --- best at iteration 15}
+Thresholds tightened (\texttt{TIMELY} $0.50{\to}0.40$, \texttt{LATE} $1.50{\to}1.12$), weights rebalanced (\texttt{TIMELINESS} $1.0{\to}1.8$, \texttt{ACCURACY} $0.5{\to}1.6$), \texttt{PREFETCH\_DEGREE} doubled. Scoring gained nonlinear penalties:
+\begin{lstlisting}[style=cppstyle]
+late_penalty = pow(late_ratio, 1.5)
+             * (1 + confidence/5.0) * ACCURACY_WEIGHT;
+score = coverage + timeliness - late_penalty
+      + 0.18*sqrt(n) - 0.03*sqrt(n);
+\end{lstlisting}
+\end{block}
+
+\begin{block}{Headline Results (gcc\_s)}
+\centering
+\begin{tabular}{l c c c c}
+\toprule
+\textbf{Variant} & \textbf{IPC} & \textbf{Speedup} & \textbf{Acc.} & \textbf{Score} \\
+\midrule
+no prefetcher          & 0.471 & 1.00$\times$ & --     & --   \\
+\midrule
+BOP (baseline)         & 0.821 & 1.74$\times$ & 98.7\% & 1.66 \\
+\textbf{BOP evolved}   & \textbf{1.040} & \textbf{2.21$\times$} & 96.5\% & \textbf{2.08} \\
+\midrule
+IPCP (baseline)        & 0.811 & 1.72$\times$ & 98.7\% & 1.64 \\
+\textbf{IPCP evolved}  & \textbf{1.088} & \textbf{2.31$\times$} & 97.4\% & \textbf{2.18} \\
+\midrule
+Berti (baseline)       & 0.956 & 2.03$\times$ & 96.8\% & 1.92 \\
+\textbf{Berti evolved} & \textbf{1.100} & \textbf{2.34$\times$} & 94.7\% & \textbf{2.20} \\
+\bottomrule
+\end{tabular}
+
+\medskip
+Relative IPC gains over hand-tuned: \textbf{BOP +27\%}, \textbf{IPCP +34\%}, \textbf{Berti +15\%}.
+\end{block}
+
+\begin{block}{Convergence: Best Score per Iteration}
+\centering
+\includegraphics[width=0.98\colwidth]{convergence.pdf}
+
+\textbf{Single-trace saturation.} BOP plateaus by iter 6, IPCP by iter 1, Berti by iter 15.
+\end{block}
+
+\end{column}
+
+\separatorcolumn
+\end{columns}
+\end{frame}
+\end{document}
