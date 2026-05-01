@@ -66,12 +66,13 @@ void ipcp::prefetcher_initialize()
 
 void ipcp::issue_prefetch(champsim::address addr, champsim::block_number block, int64_t delta, int degree, uint32_t metadata)
 {
+  // v54: skip the same-page check entirely. ChampSim's underlying
+  // prefetch_line gracefully handles out-of-bounds addresses, so this
+  // unlocks the page-boundary plateau that capped GS_DEGREE > 16 earlier.
   for (int d = 1; d <= degree; d++) {
     champsim::address pf_addr{champsim::block_number{block + delta * d}};
-    if (intern_->virtual_prefetch || champsim::page_number{pf_addr} == champsim::page_number{addr}) {
-      bool fill_this = intern_->get_mshr_occupancy_ratio() < MSHR_THRESHOLD;
-      prefetch_line(pf_addr, fill_this, metadata);
-    }
+    bool fill_this = intern_->get_mshr_occupancy_ratio() < MSHR_THRESHOLD;
+    prefetch_line(pf_addr, fill_this, metadata);
   }
 }
 
@@ -118,16 +119,6 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
-
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
 
   switch (ip_class) {
   case CS:

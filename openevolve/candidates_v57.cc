@@ -119,20 +119,16 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
 
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
+  // v57: one-shot degree bonus when our previous prefetch just got
+  // consumed (useful_prefetch=true). Doesn't change confidence — just
+  // borrows extra bandwidth on accesses we KNOW are streaming.
+  int cs_eff = useful_prefetch ? (CS_DEGREE + 4)  : CS_DEGREE;
+  int gs_eff = useful_prefetch ? (GS_DEGREE + 8)  : GS_DEGREE;
 
   switch (ip_class) {
   case CS:
     if (new_stride != 0)
-      issue_prefetch(addr, block, new_stride, CS_DEGREE, metadata_in);
+      issue_prefetch(addr, block, new_stride, cs_eff, metadata_in);
     break;
   case CPLX: {
     if (found.has_value() && new_stride != 0) {
@@ -146,7 +142,7 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
   case GS:
     if (global_stream_dir != 0)
-      issue_prefetch(addr, block, global_stream_dir, GS_DEGREE, metadata_in);
+      issue_prefetch(addr, block, global_stream_dir, gs_eff, metadata_in);
     break;
   case NL:
     issue_prefetch(addr, block, 1, NL_DEGREE, metadata_in);

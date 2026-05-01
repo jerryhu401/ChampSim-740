@@ -119,16 +119,6 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
 
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
-
   switch (ip_class) {
   case CS:
     if (new_stride != 0)
@@ -145,7 +135,13 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
     break;
   }
   case GS:
-    if (global_stream_dir != 0)
+    // v50: use the IP's actual stride as the GS delta instead of ±1.
+    // For an IP with stride +2 we prefetch +2, +4, ..., reaching further
+    // into the IP's actual pattern within the page. Falls back to the
+    // global direction when stride is unknown.
+    if (new_stride != 0)
+      issue_prefetch(addr, block, new_stride, GS_DEGREE, metadata_in);
+    else if (global_stream_dir != 0)
       issue_prefetch(addr, block, global_stream_dir, GS_DEGREE, metadata_in);
     break;
   case NL:

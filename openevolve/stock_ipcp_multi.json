@@ -1,0 +1,71 @@
+{
+  "per_trace": {
+    "600.perlbench_s-210B": {
+      "ipc": 1.986,
+      "speedup": 1.0263565891472868,
+      "accuracy": 1.0,
+      "useful": 285,
+      "useless": 0,
+      "issued": 1024
+    },
+    "602.gcc_s-734B": {
+      "ipc": 0.8061,
+      "speedup": 1.7183969302920485,
+      "accuracy": 0.9871655705255092,
+      "useful": 15460,
+      "useless": 201,
+      "issued": 32238
+    },
+    "605.mcf_s-665B": {
+      "ipc": 0.2703,
+      "speedup": 1.2895992366412212,
+      "accuracy": 0.411529933481153,
+      "useful": 21344,
+      "useless": 30521,
+      "issued": 99535
+    },
+    "619.lbm_s-2676B": {
+      "ipc": 0.6146,
+      "speedup": 1.0547451518791833,
+      "accuracy": 0.9995735153001386,
+      "useful": 9375,
+      "useless": 4,
+      "issued": 27123
+    },
+    "620.omnetpp_s-141B": {
+      "ipc": 0.2324,
+      "speedup": 1.0274093722369584,
+      "accuracy": 0.35139877669708214,
+      "useful": 7009,
+      "useless": 12937,
+      "issued": 36037
+    },
+    "623.xalancbmk_s-165B": {
+      "ipc": 0.5854,
+      "speedup": 1.426065773447016,
+      "accuracy": 0.879624697832589,
+      "useful": 21469,
+      "useless": 2938,
+      "issued": 38969
+    },
+    "631.deepsjeng_s-928B": {
+      "ipc": 1.106,
+      "speedup": 1.0146788990825688,
+      "accuracy": 0.967032967032967,
+      "useful": 264,
+      "useless": 9,
+      "issued": 2711
+    },
+    "657.xz_s-56B": {
+      "ipc": 2.508,
+      "speedup": 1.163265306122449,
+      "accuracy": 1.0,
+      "useful": 817,
+      "useless": 0,
+      "issued": 2384
+    }
+  },
+  "geomean_speedup": 1.1946462359755956,
+  "mean_accuracy": 0.8245406826086799,
+  "combined_score": 1.1576356806389039
+}

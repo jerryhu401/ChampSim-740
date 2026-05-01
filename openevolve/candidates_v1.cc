@@ -8,22 +8,30 @@
 
 // EVOLVE-BLOCK-START
 namespace {
-  constexpr int CS_DEGREE   = 8;
-  constexpr int CPLX_DEGREE = 8;
-  constexpr int GS_DEGREE   = 16;
+  // Prefetch degree per IP class
+  constexpr int CS_DEGREE   = 4;
+  constexpr int CPLX_DEGREE = 3;
+  constexpr int GS_DEGREE   = 2;   // was 3 — be less aggressive on stream-classified IPs
   constexpr int NL_DEGREE   = 1;
 
+  // Classification confidence thresholds
   constexpr int CS_CONFIDENCE_THRESHOLD   = 4;
   constexpr int CPLX_CONFIDENCE_THRESHOLD = 2;
-  constexpr int STREAM_DETECT_THRESHOLD   = 3;
+
+  // Global stream detection: require a much larger imbalance before declaring
+  // a workload-wide stream. Memory-bound workloads (mcf, omnetpp) accumulate
+  // imbalance from natural heap layout, not real streaming.
+  constexpr int STREAM_DETECT_THRESHOLD = 32;  // was 3
+
+  // Saturating confidence counter max
   constexpr int CONFIDENCE_SAT_MAX = 8;
 
+  // MSHR throttle for fill-level prefetches
   constexpr double MSHR_THRESHOLD = 0.6;
 
-  // Only route to GS if the IP's own stride is small. Large-magnitude strides
-  // matched against a global +/- direction are coincidental, not streaming —
-  // this is the v2 fix that protects mcf / omnetpp.
-  constexpr int GS_STRIDE_LIMIT = 8;
+  // Max stride magnitude (in cache blocks) that qualifies for the GS shortcut.
+  // Large strides on a "global stream" are almost certainly noise, not streaming.
+  constexpr int GS_STRIDE_LIMIT = 4;
 } // namespace
 
 ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int confidence, ip_class_t old_class)
@@ -31,23 +39,35 @@ ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int c
   if (new_stride == 0)
     return NL;
 
-  if (global_stream_dir != 0) {
+  // Stable stride dominates: route to CS as soon as the threshold is met.
+  // Hysteresis — keep CS once promoted, even if confidence dips.
+  if (new_stride == old_stride) {
+    if (confidence >= CS_CONFIDENCE_THRESHOLD || old_class == CS)
+      return CS;
+    // Stable-but-low-confidence: fall through to the gated GS path below.
+  }
+
+  // GS shortcut: only when *all* of:
+  //   - global stream is active
+  //   - this IP has at least one prior matching observation (confidence >= 1)
+  //   - the IP's own stride is small AND in the global direction
+  //   - we don't already have strong CS signal
+  if (global_stream_dir != 0 && confidence >= 1) {
     bool dir_match = (global_stream_dir > 0 && new_stride > 0) || (global_stream_dir < 0 && new_stride < 0);
-    if (dir_match && std::abs(new_stride) <= GS_STRIDE_LIMIT) {
-      if (confidence < CS_CONFIDENCE_THRESHOLD || old_class == GS) {
-        return GS;
-      }
+    bool small_stride = std::abs(new_stride) <= GS_STRIDE_LIMIT;
+    if (dir_match && small_stride && (confidence < CS_CONFIDENCE_THRESHOLD || old_class == GS)) {
+      return GS;
     }
   }
 
+  // Stable stride at low confidence: prefer to keep classification stable
+  // rather than fall to CPLX/NL.
   if (new_stride == old_stride) {
-    if (confidence >= CS_CONFIDENCE_THRESHOLD)
-      return CS;
-    if (old_class == CS)
-      return CS;
+    if (old_class == CS) return CS;
     return NL;
   }
 
+  // Stride changed: CPLX path (signature table) for IPs with evidence of variability.
   if (old_class == CPLX && confidence >= 1)
     return CPLX;
   if (confidence >= CPLX_CONFIDENCE_THRESHOLD)
@@ -79,6 +99,7 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
                                         uint32_t metadata_in)
 {
   champsim::block_number block{addr};
+
   auto found = ip_table.check_hit({ip, block, 0, 0, NONE, 0});
 
   int64_t new_stride = 0;
@@ -108,10 +129,16 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
     }
   }
 
-  if (new_stride > 0) global_pos_count++;
-  else if (new_stride < 0) global_neg_count++;
-  if (global_pos_count - global_neg_count > STREAM_DETECT_THRESHOLD) global_stream_dir = 1;
-  else if (global_neg_count - global_pos_count > STREAM_DETECT_THRESHOLD) global_stream_dir = -1;
+  if (new_stride > 0) {
+    global_pos_count++;
+  } else if (new_stride < 0) {
+    global_neg_count++;
+  }
+  if (global_pos_count - global_neg_count > STREAM_DETECT_THRESHOLD) {
+    global_stream_dir = 1;
+  } else if (global_neg_count - global_pos_count > STREAM_DETECT_THRESHOLD) {
+    global_stream_dir = -1;
+  }
   if (global_pos_count + global_neg_count > 1024) {
     global_pos_count >>= 1;
     global_neg_count >>= 1;
@@ -119,21 +146,12 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
 
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
-
   switch (ip_class) {
   case CS:
     if (new_stride != 0)
       issue_prefetch(addr, block, new_stride, CS_DEGREE, metadata_in);
     break;
+
   case CPLX: {
     if (found.has_value() && new_stride != 0) {
       cplx_table.fill({found->signature, new_stride, confidence});
@@ -144,13 +162,16 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
     }
     break;
   }
+
   case GS:
     if (global_stream_dir != 0)
       issue_prefetch(addr, block, global_stream_dir, GS_DEGREE, metadata_in);
     break;
+
   case NL:
     issue_prefetch(addr, block, 1, NL_DEGREE, metadata_in);
     break;
+
   default:
     break;
   }

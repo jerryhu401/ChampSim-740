@@ -11,7 +11,7 @@ namespace {
   constexpr int CS_DEGREE   = 8;
   constexpr int CPLX_DEGREE = 8;
   constexpr int GS_DEGREE   = 16;
-  constexpr int NL_DEGREE   = 1;
+  constexpr int NL_DEGREE   = 4;
 
   constexpr int CS_CONFIDENCE_THRESHOLD   = 4;
   constexpr int CPLX_CONFIDENCE_THRESHOLD = 2;
@@ -118,16 +118,6 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
-
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
 
   switch (ip_class) {
   case CS:

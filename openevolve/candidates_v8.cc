@@ -8,9 +8,9 @@
 
 // EVOLVE-BLOCK-START
 namespace {
-  constexpr int CS_DEGREE   = 8;
-  constexpr int CPLX_DEGREE = 8;
-  constexpr int GS_DEGREE   = 16;
+  constexpr int CS_DEGREE   = 4;
+  constexpr int CPLX_DEGREE = 3;
+  constexpr int GS_DEGREE   = 3;
   constexpr int NL_DEGREE   = 1;
 
   constexpr int CS_CONFIDENCE_THRESHOLD   = 4;
@@ -23,7 +23,7 @@ namespace {
   // Only route to GS if the IP's own stride is small. Large-magnitude strides
   // matched against a global +/- direction are coincidental, not streaming —
   // this is the v2 fix that protects mcf / omnetpp.
-  constexpr int GS_STRIDE_LIMIT = 8;
+  constexpr int GS_STRIDE_LIMIT = 64;
 } // namespace
 
 ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int confidence, ip_class_t old_class)
@@ -33,9 +33,18 @@ ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int c
 
   if (global_stream_dir != 0) {
     bool dir_match = (global_stream_dir > 0 && new_stride > 0) || (global_stream_dir < 0 && new_stride < 0);
-    if (dir_match && std::abs(new_stride) <= GS_STRIDE_LIMIT) {
-      if (confidence < CS_CONFIDENCE_THRESHOLD || old_class == GS) {
-        return GS;
+    if (dir_match) {
+      if (std::abs(new_stride) <= GS_STRIDE_LIMIT) {
+        // Small-stride direction match → use global stream (delta = ±1).
+        if (confidence < CS_CONFIDENCE_THRESHOLD || old_class == GS) {
+          return GS;
+        }
+      } else if (new_stride == old_stride && confidence >= 1) {
+        // Large-stride but already stable → promote to CS early.
+        // The global stream is an extra confirmation that this IP isn't
+        // walking randomly. CS issues at the IP's actual stride, so we
+        // skip the misleading ±1 GS path.
+        return CS;
       }
     }
   }
@@ -118,16 +127,6 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
-
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
 
   switch (ip_class) {
   case CS:

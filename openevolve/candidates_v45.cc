@@ -33,9 +33,18 @@ ipcp::ip_class_t ipcp::classify_ip(int64_t old_stride, int64_t new_stride, int c
 
   if (global_stream_dir != 0) {
     bool dir_match = (global_stream_dir > 0 && new_stride > 0) || (global_stream_dir < 0 && new_stride < 0);
-    if (dir_match && std::abs(new_stride) <= GS_STRIDE_LIMIT) {
-      if (confidence < CS_CONFIDENCE_THRESHOLD || old_class == GS) {
-        return GS;
+    if (dir_match) {
+      int64_t mag = std::abs(new_stride);
+      if (mag <= GS_STRIDE_LIMIT) {
+        // Tight stride → use the global ±1 stream interpretation.
+        if (confidence < CS_CONFIDENCE_THRESHOLD || old_class == GS) {
+          return GS;
+        }
+      } else if (mag <= 32 && new_stride == old_stride && confidence >= 1) {
+        // Medium stride direction-matched and stable for at least one
+        // observation: skip the (misleading) ±1 GS path and promote
+        // straight to CS so prefetches go at the IP's actual stride.
+        return CS;
       }
     }
   }
@@ -118,16 +127,6 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
-
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
 
   switch (ip_class) {
   case CS:

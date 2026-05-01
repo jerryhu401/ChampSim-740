@@ -1,0 +1,64 @@
+# OpenEvolve config for IPCP multi-trace evolution.
+#
+# Reads OPENAI_API_KEY from env. Configured for the CMU LiteLLM gateway, but
+# this works with any OpenAI-compatible endpoint as long as the key + api_base
+# match.
+#
+# Usage:
+#   export OPENAI_API_KEY=sk-...
+#   openevolve-run \
+#     openevolve/initial_program_ipcp_multi.cc \
+#     openevolve/evaluator_ipcp_multi.py \
+#     --config openevolve/config_ipcp_multi.yaml \
+#     --iterations 20 \
+#     --output_dir openevolve/openevolve_output_ipcp_multi
+
+max_iterations: 20
+checkpoint_interval: 5
+language: cpp
+
+llm:
+  primary_model: "gpt-5-mini"
+  primary_model_weight: 1.0
+  api_base: "https://ai-gateway.andrew.cmu.edu"
+  temperature: 0.7
+  max_tokens: 8000
+  timeout: 180
+
+prompt:
+  system_message: |
+    You are an expert computer architect specializing in memory prefetcher
+    design. You are evolving the IPCP (IP-Classifier Prefetcher) for the L2
+    cache in ChampSim.
+
+    The fitness function rewards GEOMETRIC-MEAN speedup across a multi-trace
+    SPEC suite that mixes branch-heavy, memory-bound, and streaming workloads.
+    A change that helps gcc but hurts lbm/mcf will not score well — you must
+    generalize.
+
+    You may modify only the EVOLVE-BLOCK region. Inside it you may:
+      - Tune the constants (CS/CPLX/GS/NL_DEGREE, CS/CPLX_CONFIDENCE_THRESHOLD,
+        STREAM_DETECT_THRESHOLD, CONFIDENCE_SAT_MAX, MSHR_THRESHOLD).
+      - Rewrite classify_ip(). It is non-static and may read instance state
+        (e.g. global_stream_dir, ip_table.size()).
+      - Add helper functions inside the anonymous namespace if useful.
+
+    Do NOT change function signatures, member names, or anything outside the
+    EVOLVE-BLOCK markers.
+
+    Goal: maximize geometric-mean speedup while keeping accuracy reasonable
+    (fewer than ~10% useless prefetches per trace).
+
+database:
+  population_size: 30
+  archive_size: 10
+  num_islands: 2
+  elite_selection_ratio: 0.2
+  exploitation_ratio: 0.7
+
+evaluator:
+  timeout: 1200
+  parallel_evaluations: 1
+
+diff_based_evolution: true
+max_code_length: 8000

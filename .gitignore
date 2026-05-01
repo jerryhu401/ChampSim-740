@@ -33,3 +33,10 @@ compile_commands.json
 openevolve/.env
 openevolve_output/checkpoints/*
 openevolve_output/logs/*
+
+# SPEC trace files (downloaded; ~3.6 GiB; not for VCS)
+traces/
+*.champsimtrace.xz
+
+# Claude Code internal state
+.claude/

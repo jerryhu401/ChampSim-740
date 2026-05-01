@@ -1,0 +1,226 @@
+{
+  "per_trace": {
+    "no-pf": {
+      "600.perlbench_s-210B": {
+        "ipc": 1.935,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "602.gcc_s-734B": {
+        "ipc": 0.4691,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "605.mcf_s-665B": {
+        "ipc": 0.2096,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "619.lbm_s-2676B": {
+        "ipc": 0.5827,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "620.omnetpp_s-141B": {
+        "ipc": 0.2262,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "623.xalancbmk_s-165B": {
+        "ipc": 0.4105,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "631.deepsjeng_s-928B": {
+        "ipc": 1.09,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      },
+      "657.xz_s-56B": {
+        "ipc": 2.156,
+        "issued": 0,
+        "useful": 0,
+        "useless": 0
+      }
+    },
+    "BOP": {
+      "600.perlbench_s-210B": {
+        "ipc": 1.959,
+        "issued": 459,
+        "useful": 144,
+        "useless": 0
+      },
+      "602.gcc_s-734B": {
+        "ipc": 0.9304,
+        "issued": 30782,
+        "useful": 14715,
+        "useless": 310
+      },
+      "605.mcf_s-665B": {
+        "ipc": 0.2399,
+        "issued": 31908,
+        "useful": 11577,
+        "useless": 15837
+      },
+      "619.lbm_s-2676B": {
+        "ipc": 0.6805,
+        "issued": 18590,
+        "useful": 15588,
+        "useless": 7
+      },
+      "620.omnetpp_s-141B": {
+        "ipc": 0.2266,
+        "issued": 2904,
+        "useful": 610,
+        "useless": 1418
+      },
+      "623.xalancbmk_s-165B": {
+        "ipc": 0.6365,
+        "issued": 36661,
+        "useful": 25799,
+        "useless": 2837
+      },
+      "631.deepsjeng_s-928B": {
+        "ipc": 1.096,
+        "issued": 382,
+        "useful": 82,
+        "useless": 2
+      },
+      "657.xz_s-56B": {
+        "ipc": 2.489,
+        "issued": 814,
+        "useful": 812,
+        "useless": 0
+      }
+    },
+    "IPCP": {
+      "600.perlbench_s-210B": {
+        "ipc": 1.995,
+        "issued": 1472,
+        "useful": 309,
+        "useless": 0
+      },
+      "602.gcc_s-734B": {
+        "ipc": 1.088,
+        "issued": 90465,
+        "useful": 15556,
+        "useless": 421
+      },
+      "605.mcf_s-665B": {
+        "ipc": 0.2603,
+        "issued": 168144,
+        "useful": 24261,
+        "useless": 60667
+      },
+      "619.lbm_s-2676B": {
+        "ipc": 0.7076,
+        "issued": 51854,
+        "useful": 17445,
+        "useless": 4
+      },
+      "620.omnetpp_s-141B": {
+        "ipc": 0.2302,
+        "issued": 69810,
+        "useful": 9280,
+        "useless": 27521
+      },
+      "623.xalancbmk_s-165B": {
+        "ipc": 0.7393,
+        "issued": 104390,
+        "useful": 29943,
+        "useless": 2967
+      },
+      "631.deepsjeng_s-928B": {
+        "ipc": 1.109,
+        "issued": 4012,
+        "useful": 301,
+        "useless": 32
+      },
+      "657.xz_s-56B": {
+        "ipc": 2.508,
+        "issued": 3157,
+        "useful": 817,
+        "useless": 0
+      }
+    },
+    "Berti": {
+      "600.perlbench_s-210B": {
+        "ipc": 1.969,
+        "issued": 1329,
+        "useful": 172,
+        "useless": 0
+      },
+      "602.gcc_s-734B": {
+        "ipc": 1.1,
+        "issued": 119011,
+        "useful": 15369,
+        "useless": 854
+      },
+      "605.mcf_s-665B": {
+        "ipc": 0.2375,
+        "issued": 165790,
+        "useful": 20116,
+        "useless": 75984
+      },
+      "619.lbm_s-2676B": {
+        "ipc": 0.7104,
+        "issued": 53565,
+        "useful": 14877,
+        "useless": 0
+      },
+      "620.omnetpp_s-141B": {
+        "ipc": 0.2265,
+        "issued": 20335,
+        "useful": 1760,
+        "useless": 9829
+      },
+      "623.xalancbmk_s-165B": {
+        "ipc": 0.8351,
+        "issued": 110067,
+        "useful": 31443,
+        "useless": 1956
+      },
+      "631.deepsjeng_s-928B": {
+        "ipc": 1.094,
+        "issued": 1837,
+        "useful": 92,
+        "useless": 1
+      },
+      "657.xz_s-56B": {
+        "ipc": 2.513,
+        "issued": 3222,
+        "useful": 825,
+        "useless": 0
+      }
+    }
+  },
+  "summary": {
+    "no-pf": {
+      "geomean_speedup": 1.0,
+      "mean_accuracy": 0.0,
+      "n": 8
+    },
+    "BOP": {
+      "geomean_speedup": 1.2178647784523255,
+      "mean_accuracy": 0.8223912079187656,
+      "n": 8
+    },
+    "IPCP": {
+      "geomean_speedup": 1.293211020827666,
+      "mean_accuracy": 0.7906252354022203,
+      "n": 8
+    },
+    "Berti": {
+      "geomean_speedup": 1.2938821430492846,
+      "mean_accuracy": 0.779904143060892,
+      "n": 8
+    }
+  }
+}

@@ -119,20 +119,17 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
 
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
-
   switch (ip_class) {
   case CS:
-    if (new_stride != 0)
+    // v53: also emit a short ±1 chain alongside the CS stride chain.
+    // Captures immediate neighbor (often hot via spatial locality) on top
+    // of the IP's actual stride pattern.
+    if (new_stride != 0) {
       issue_prefetch(addr, block, new_stride, CS_DEGREE, metadata_in);
+      int dir = (new_stride > 0) ? 1 : -1;
+      if (std::abs(new_stride) > 1)
+        issue_prefetch(addr, block, dir, GS_DEGREE / 2, metadata_in);
+    }
     break;
   case CPLX: {
     if (found.has_value() && new_stride != 0) {

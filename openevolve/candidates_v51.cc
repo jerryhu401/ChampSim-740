@@ -119,15 +119,11 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
 
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
+  // v51: confidence-scaled GS degree.
+  // High-confidence streams: full GS_DEGREE. Low confidence: half.
+  // Prevents fresh, only-tentatively-streaming IPs (mcf, omnetpp) from
+  // burning the full chain on every access.
+  int gs_eff = (confidence >= 2) ? GS_DEGREE : (GS_DEGREE / 2);
 
   switch (ip_class) {
   case CS:
@@ -146,7 +142,7 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
   case GS:
     if (global_stream_dir != 0)
-      issue_prefetch(addr, block, global_stream_dir, GS_DEGREE, metadata_in);
+      issue_prefetch(addr, block, global_stream_dir, gs_eff, metadata_in);
     break;
   case NL:
     issue_prefetch(addr, block, 1, NL_DEGREE, metadata_in);

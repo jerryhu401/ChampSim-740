@@ -97,6 +97,13 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
     } else if (new_stride != old_stride) {
       confidence = std::max(confidence - 1, 0);
     }
+    // v55: useful_prefetch=true means the line we prefetched on a prior
+    // access just got consumed — direct confirmation that our prediction
+    // was right. Treat it as a strong positive signal independent of
+    // stride consistency.
+    if (useful_prefetch) {
+      confidence = std::min(confidence + 2, CONFIDENCE_SAT_MAX);
+    }
 
     ip_class = classify_ip(old_stride, new_stride, confidence, found->ip_class);
 
@@ -118,16 +125,6 @@ uint32_t ipcp::prefetcher_cache_operate(champsim::address addr, champsim::addres
   }
 
   ip_table.fill({ip, block, new_stride, confidence, ip_class, sig});
-
-  // v58: skip prefetch on cache hit when MSHR is pressured AND we're not
-  // riding a useful streak. Hits mean the data is already there, and the
-  // demand request behind us probably finds the next line via natural
-  // cache locality. Saves bandwidth on memory-bound traces (mcf/omnetpp).
-  bool skip = cache_hit && !useful_prefetch
-              && intern_->get_mshr_occupancy_ratio() > 0.4;
-  if (skip) {
-    return metadata_in;
-  }
 
   switch (ip_class) {
   case CS:
